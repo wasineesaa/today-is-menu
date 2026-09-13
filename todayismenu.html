@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>วันนี้กินอะไรดี - TODAY IS MENU</title>
+    <!-- Google Fonts: Prompt & Kanit & RDKonmek (Cloud font via Font cdn or @font-face simulation) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Face for RDKonmek (ก้อนเมฆ) -->
+    <style>
+        @font-face {
+            font-family: 'RDKonmek';
+            src: url('https://fonts.cdnfonts.com/s/18158/RDKonmek.woff') format('woff'),
+                 url('https://cdn.jsdelivr.net/gh/lazywasabi/font-fahitat-s/RDKonmek.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+    </style>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#E74639',
+                            green: '#34AB53',
+                            yellow: '#FFD577',
+                            'red-dark': '#C63428',
+                            'green-dark': '#298942',
+                            'yellow-dark': '#E6BC5A',
+                            bg: '#FFFDF9',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['RDKonmek', 'Kanit', 'sans-serif'],
+                        body: ['RDKonmek', 'Prompt', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'fun': '0 8px 0px 0px rgba(0,0,0,0.08)',
+                        'pop': '0 10px 25px -5px rgba(231, 70, 57, 0.25)',
+                        'card-pop': '0 6px 20px rgba(0,0,0,0.06)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'RDKonmek', 'Prompt', sans-serif;
+            background-color: #FFFBF5;
+            background-image: radial-gradient(#FFD577 0.85px, transparent 0.85px), radial-gradient(#E74639 0.85px, #FFFBF5 0.85px);
+            background-size: 34px 34px;
+            background-position: 0 0, 17px 17px;
+            color: #2D3142;
+        }
+        .font-kanit {
+            font-family: 'RDKonmek', 'Kanit', sans-serif;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 213, 119, 0.6)); }
+            50% { transform: scale(1.03); filter: drop-shadow(0 0 22px rgba(231, 70, 57, 0.7)); }
+        }
+        .pulse-glow {
+            animation: pulseGlow 1.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-red selection:text-white">
+
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b-4 border-brand-yellow shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-brand-red text-white flex items-center justify-center text-xl shadow-md border-2 border-brand-yellow">
+                    🍲
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-brand-red tracking-tight font-kanit">
+                        วันนี้กินอะไรดี?
+                    </h1>
+                    <p class="text-xs text-stone-500 font-kanit">TODAY IS MENU</p>
+                </div>
+            </div>
+
+            <!-- Header Right Controls: Sound Toggle & Surprise Button -->
+            <div class="flex items-center gap-2.5">
+                <!-- Sound Toggle Button -->
+                <button id="soundToggleBtn" onclick="toggleSound()" class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition shadow-sm flex items-center gap-1 active:scale-95 font-kanit" title="เปิด/ปิดเสียง">
+                    <span id="soundIcon">🔊</span>
+                    <span id="soundText" class="hidden sm:inline">เปิดเสียง</span>
+                </button>
+
+                <!-- Surprise Button & Description -->
+                <div class="flex flex-col items-end">
+                    <button onclick="playPopSound(); surpriseMe()" class="px-4 py-2 rounded-xl bg-brand-green hover:bg-brand-green-dark text-white font-medium text-sm transition shadow-sm flex items-center gap-1.5 active:scale-95 font-kanit">
+                        <span>สุ่มทันที</span>
+                    </button>
+                    <span class="text-[10px] text-stone-400 mt-0.5 font-kanit">สุ่มแบบไม่เลือก</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-3xl w-full mx-auto px-4 py-6 space-y-6">
+
+        <!-- Filters Section -->
+        <section class="bg-white rounded-3xl border-2 border-stone-200/80 p-5 sm:p-6 shadow-fun">
+            <div class="flex items-center justify-between border-b-2 border-stone-100 pb-3 mb-4">
+                <h3 class="font-bold font-kanit text-stone-800 text-base">
+                    กำหนดความต้องการ (เลือกได้หลายข้อ)
+                </h3>
+                <button onclick="playPopSound(); resetFilters()" class="text-xs font-semibold text-brand-red hover:underline font-kanit">
+                    ↺ ล้างตัวเลือก
+                </button>
+            </div>
+
+            <div class="space-y-5">
+                <!-- 1. Meat -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs sm:text-sm font-bold text-stone-800 font-kanit">
+                            1. ประเภทเนื้อสัตว์
+                        </label>
+                        <span id="selectedMeatBadge" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">ทานได้ทุกอย่าง</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="meatOptions">
+                        <button type="button" data-type="meat" data-val="all" onclick="playPopSound(); toggleFilter('meat', 'all')" class="filter-btn active flex items-center justify-center p-2.5 rounded-2xl border-2 border-brand-red bg-brand-red/10 text-brand-red font-medium transition active:scale-95 text-xs font-kanit">
+                            ทานได้ทุกอย่าง
+                        </button>
+                        <button type="button" data-type="meat" data-val="pork" onclick="playPopSound(); toggleFilter('meat', 'pork')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            หมู / หมูกรอบ
+                        </button>
+                        <button type="button" data-type="meat" data-val="chicken" onclick="playPopSound(); toggleFilter('meat', 'chicken')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            ไก่ / เป็ด
+                        </button>
+                        <button type="button" data-type="meat" data-val="beef" onclick="playPopSound(); toggleFilter('meat', 'beef')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            วัว
+                        </button>
+                        <button type="button" data-type="meat" data-val="fish" onclick="playPopSound(); toggleFilter('meat', 'fish')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            ปลา
+                        </button>
+                        <button type="button" data-type="meat" data-val="seafood" onclick="playPopSound(); toggleFilter('meat', 'seafood')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            ทะเล
+                        </button>
+                        <button type="button" data-type="meat" data-val="veggie" onclick="playPopSound(); toggleFilter('meat', 'veggie')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            มังสวิรัติ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Category -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs sm:text-sm font-bold text-stone-800 font-kanit">
+                            2. รูปแบบอาหาร
+                        </label>
+                        <span id="selectedCategoryBadge" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">ทานได้ทุกแบบ</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="categoryOptions">
+                        <button type="button" data-type="category" data-val="all" onclick="playPopSound(); toggleFilter('category', 'all')" class="filter-btn active flex items-center justify-center p-2.5 rounded-2xl border-2 border-brand-yellow bg-brand-yellow/30 text-stone-900 font-medium transition active:scale-95 text-xs font-kanit">
+                            ทานได้หมด
+                        </button>
+                        <button type="button" data-type="category" data-val="single" onclick="playPopSound(); toggleFilter('category', 'single')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            ข้าว / จานเดียว
+                        </button>
+                        <button type="button" data-type="category" data-val="noodle" onclick="playPopSound(); toggleFilter('category', 'noodle')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            ก๋วยเตี๋ยว / เส้น
+                        </button>
+                        <button type="button" data-type="category" data-val="side" onclick="playPopSound(); toggleFilter('category', 'side')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-stone-700 font-medium transition active:scale-95 text-xs font-kanit">
+                            กับข้าว
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Spiciness -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs sm:text-sm font-bold text-stone-800 font-kanit">
+                            3. ระดับความเผ็ด
+                        </label>
+                        <span id="selectedSpicyBadge" class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">รสไหนก็ได้</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2" id="spicyOptions">
+                        <button type="button" data-type="spicy" data-val="all" onclick="playPopSound(); toggleFilter('spicy', 'all')" class="filter-btn active flex items-center justify-center p-2.5 rounded-2xl border-2 border-brand-green bg-brand-green/15 text-brand-green-dark font-medium transition active:scale-95 text-xs font-kanit">
+                            รสไหนก็ได้
+                        </button>
+                        <button type="button" data-type="spicy" data-val="spicy" onclick="playPopSound(); toggleFilter('spicy', 'spicy')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-brand-red font-semibold transition active:scale-95 text-xs font-kanit">
+                            เผ็ดแซ่บ
+                        </button>
+                        <button type="button" data-type="spicy" data-val="non-spicy" onclick="playPopSound(); toggleFilter('spicy', 'non-spicy')" class="filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white text-brand-green-dark font-semibold transition active:scale-95 text-xs font-kanit">
+                            ไม่เผ็ด
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spin Button -->
+            <div class="mt-6 pt-4 border-t-2 border-stone-100">
+                <button id="spinBtn" onclick="playPopSound(); triggerSpinWheel()" class="w-full py-3.5 px-6 rounded-2xl bg-brand-red hover:bg-brand-red-dark text-white font-extrabold text-base sm:text-lg font-kanit shadow-pop active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <span>🎰</span>
+                    <span>สุ่มเมนูเด็ดตามที่เลือก</span>
+                    <span class="text-xs bg-white/25 text-white font-normal px-2.5 py-0.5 rounded-full" id="matchCountBadge">มี 205 เมนู</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Slot Machine Section with Enhanced Visual Depth -->
+        <section id="slotSection" class="relative bg-gradient-to-b from-white to-stone-50 rounded-3xl border-4 border-brand-yellow p-6 sm:p-8 shadow-[0_15px_35px_rgba(255,213,119,0.3)] text-center overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-brand-red via-brand-yellow to-brand-green"></div>
+            
+            <div class="max-w-md mx-auto">
+                <h3 class="text-lg sm:text-xl font-extrabold font-kanit text-stone-800 mb-5 tracking-wide">
+                    TODAY IS MENU
+                </h3>
+
+                <!-- Slot Display Box with 3D Depth & Inset Shadows -->
+                <div class="relative bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 rounded-3xl p-7 border-4 border-stone-800 shadow-[inset_0_4px_12px_rgba(0,0,0,0.8),0_10px_20px_rgba(0,0,0,0.15)] overflow-hidden mb-5 text-white">
+                    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
+                    <div class="absolute inset-0 border border-white/10 rounded-2xl pointer-events-none"></div>
+
+                    <div class="flex flex-col items-center justify-center min-h-[160px] relative z-10">
+                        <div id="slotEmoji" class="text-6xl sm:text-7xl mb-2 filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]">🍲</div>
+                        <div id="slotName" class="text-xl sm:text-2xl font-extrabold font-kanit text-brand-yellow tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                            กดปุ่มสุ่มเพื่อเริ่มหาเมนู
+                        </div>
+                        <div id="slotTags" class="flex flex-wrap items-center justify-center gap-2 mt-3.5 opacity-90">
+                            <span class="text-xs px-3 py-1 rounded-full bg-white/15 text-stone-200 border border-white/10 shadow-sm">พร้อมสุ่มจาก 205 เมนู</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="resultActions" class="hidden flex items-center justify-center gap-2">
+                    <button onclick="playPopSound(); triggerSpinWheel()" class="px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-kanit font-medium text-xs sm:text-sm transition shadow-sm border border-stone-200 flex items-center gap-1.5 active:scale-95">
+                        <span>🔄</span>
+                        <span>สุ่มใหม่อีกครั้ง</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-12 bg-white border-t-2 border-stone-200/80 py-6 text-center text-xs text-stone-500 font-kanit">
+        <div class="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-stone-800">TODAY IS MENU</span>
+                <span class="text-stone-300">|</span>
+                <span>Created by wasinee s.</span>
+            </div>
+            <div class="text-stone-400 text-[11px]">
+                ช่วยแก้ปัญหาคิดไม่ออกในทุกมื้ออาหาร
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-stone-900/90 text-white px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-medium transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+        <span id="toastMessage">ข้อความแจ้งเตือน</span>
+    </div>
+
+    <script>
+        // Web Audio API for cute interaction sounds
+        let audioCtx = null;
+        let isSoundEnabled = true;
+
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled;
+            const soundIcon = document.getElementById('soundIcon');
+            const soundText = document.getElementById('soundText');
+            if (isSoundEnabled) {
+                soundIcon.textContent = '🔊';
+                soundText.textContent = 'เปิดเสียง';
+                showToast("เปิดเสียงเรียบร้อย");
+            } else {
+                soundIcon.textContent = '🔇';
+                soundText.textContent = 'ปิดเสียง';
+                showToast("ปิดเสียงเรียบร้อย");
+            }
+        }
+
+        function initAudio() {
+            if (!audioCtx && isSoundEnabled) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playPopSound() {
+            if (!isSoundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch (e) {}
+        }
+
+        function playTickSound() {
+            if (!isSoundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch (e) {}
+        }
+
+        const FOOD_DATABASE = [
+            { id: 1, name: "กะเพราหมูชิ้น ไข่ดาว", meat: "pork", category: "single", spicy: "spicy", emoji: "🍳" },
+            { id: 2, name: "กะเพราไก่ไข่ดาว", meat: "chicken", category: "single", spicy: "spicy", emoji: "🍗" },
+            { id: 3, name: "กะเพราเนื้อไข่ดาว", meat: "beef", category: "single", spicy: "spicy", emoji: "🥩" },
+            { id: 4, name: "กะเพราทะเลรวมมิตร", meat: "seafood", category: "single", spicy: "spicy", emoji: "🦐" },
+            { id: 5, name: "กะเพราไข่ข้น", meat: "veggie", category: "single", spicy: "spicy", emoji: "🍳" },
+            { id: 6, name: "ผัดซีอิ๊วหมู", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 7, name: "ราดหน้าหมู", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍲" },
+            { id: 8, name: "ข้าวปลาหมึกทอดกระเทียม", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🦑" },
+            { id: 9, name: "ข้าวหมูทอดกระเทียม", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🥓" },
+            { id: 10, name: "ข้าวผัดต้มยำทะเล", meat: "seafood", category: "single", spicy: "spicy", emoji: "🍚" },
+            { id: 11, name: "ผัดพริกแกงปลาหมึก", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦑" },
+            { id: 12, name: "ข้าวผัดปู", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🦀" },
+            { id: 13, name: "ข้าวผัดพริกเผาไก่", meat: "chicken", category: "single", spicy: "spicy", emoji: "🍛" },
+            { id: 14, name: "ข้าวผัดคะน้าปลาเค็ม", meat: "fish", category: "single", spicy: "non-spicy", emoji: "🐟" },
+            { id: 15, name: "ข้าวไก่ทอดน้ำปลา", meat: "chicken", category: "single", spicy: "non-spicy", emoji: "🍗" },
+            { id: 16, name: "ข้าวไข่ข้นแฮมชีส", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🧀" },
+            { id: 17, name: "ข้าวปลาหมึกยำ", meat: "seafood", category: "single", spicy: "spicy", emoji: "🦑" },
+            { id: 18, name: "ข้าวปูผัดผงกะหรี่", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🦀" },
+            { id: 19, name: "ข้าวคลุกกะปิ", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🍱" },
+            { id: 20, name: "ลาบวุ้นเส้น", meat: "pork", category: "noodle", spicy: "spicy", emoji: "🥗" },
+            { id: 21, name: "มาม่าผัดไส้กรอก", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 22, name: "ยำไส้กรอกไข่เค็ม", meat: "pork", category: "side", spicy: "spicy", emoji: "🌶️" },
+            { id: 23, name: "ข้าวผัดพริกสดหมู", meat: "pork", category: "single", spicy: "spicy", emoji: "🍛" },
+            { id: 24, name: "แหนมผัดไข่", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🍳" },
+            { id: 25, name: "ข้าวปลาหมึกผัดไข่เค็ม", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🦑" },
+            { id: 26, name: "มาม่าต้มยำทะเล", meat: "seafood", category: "noodle", spicy: "spicy", emoji: "🍲" },
+            { id: 27, name: "ผัดไทย", meat: "seafood", category: "noodle", spicy: "non-spicy", emoji: "🥢" },
+            { id: 28, name: "ข้าวยำปลากระป๋อง", meat: "fish", category: "single", spicy: "spicy", emoji: "🐟" },
+            { id: 29, name: "ผักบุ้งไฟแดง", meat: "veggie", category: "side", spicy: "spicy", emoji: "🥬" },
+            { id: 30, name: "สุกี้แห้งหมู", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍲" },
+            { id: 31, name: "ยำวุ้นเส้นทะเล", meat: "seafood", category: "noodle", spicy: "spicy", emoji: "🥗" },
+            { id: 32, name: "ข้าวผัดกะหล่ำปลี", meat: "veggie", category: "single", spicy: "non-spicy", emoji: "🍚" },
+            { id: 33, name: "ยำวุ้นเส้นใส่ไข่", meat: "veggie", category: "noodle", spicy: "spicy", emoji: "🥗" },
+            { id: 34, name: "สปาเก็ตตี้ผัดพริกแห้ง", meat: "pork", category: "noodle", spicy: "spicy", emoji: "🍝" },
+            { id: 35, name: "เต้าหู้หมูสับผัดไข่", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🍳" },
+            { id: 36, name: "ข้าวผัดฉ่าทะเล", meat: "seafood", category: "single", spicy: "spicy", emoji: "🌶️" },
+            { id: 37, name: "ข้าวราดผัดถั่วงอก", meat: "veggie", category: "single", spicy: "non-spicy", emoji: "🥬" },
+            { id: 38, name: "ข้าวผัดกุนเชียง", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🍚" },
+            { id: 39, name: "ข้าวไข่เจียวกุ้งสับ", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🍳" },
+            { id: 40, name: "สปาเก็ตตี้เบคอน", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 41, name: "ข้าวราดผัดเต้าหู้", meat: "veggie", category: "single", spicy: "non-spicy", emoji: "🍄" },
+            { id: 42, name: "ยำรวมเห็ด", meat: "veggie", category: "side", spicy: "spicy", emoji: "🍄" },
+            { id: 43, name: "ข้าวราดผัดผักกระเฉด", meat: "veggie", category: "single", spicy: "spicy", emoji: "🥬" },
+            { id: 44, name: "สปาเก็ตตี้ครีมซอสเห็ด", meat: "veggie", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 45, name: "ข้าวกุ้งผัดพริกเกลือ", meat: "seafood", category: "single", spicy: "spicy", emoji: "🦐" },
+            { id: 46, name: "ผัดพริกแกงผักบุ้ง หมูกรอบ", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 47, name: "ผัดผงกะหรี่ทะเล", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🦑" },
+            { id: 48, name: "เต้าหู้ไข่ หมูสับกระเทียมพริกไทย", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🍲" },
+            { id: 49, name: "หมูผัดน้ำมันหอย", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 50, name: "สปาเก็ตตี้ขี้เมา", meat: "seafood", category: "noodle", spicy: "spicy", emoji: "🍝" },
+            { id: 51, name: "ตับหมูกระเทียมพริกไทย", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 52, name: "หมูชิ้นผัดพริกหยวก", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 53, name: "กุ้งผัดโหระพา", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦐" },
+            { id: 54, name: "ผัดคะน้าหมูกรอบ", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 55, name: "สปาเก็ตตี้ซอสมะเขือเทศ", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 56, name: "หอยลายผัดฉ่า", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦪" },
+            { id: 57, name: "เนื้อผัดน้ำมันหอย", meat: "beef", category: "side", spicy: "non-spicy", emoji: "🥩" },
+            { id: 58, name: "ผัดผงกะหรี่หมูกรอบ", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 59, name: "ปลาดุกผัดพริกหยวก", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 60, name: "กะหล่ำปลีผัดกุ้ง", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🦐" },
+            { id: 61, name: "บล็อคโคลีผัดกุ้ง", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🥦" },
+            { id: 62, name: "ปลาดุกผัดแกงเขียวหวาน", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 63, name: "ลูกชิ้นปลาผัดโหระพา", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 64, name: "ผัดเปรี้ยวหวานหมู", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 65, name: "แกงจืดผักกาดขาว", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥣" },
+            { id: 66, name: "ผัดผักกระเฉดหมูกรอบ", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 67, name: "หมูผัดแกงเขียวหวาน", meat: "pork", category: "side", spicy: "spicy", emoji: "🍛" },
+            { id: 68, name: "ราดหน้า", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍜" },
+            { id: 69, name: "ผัดผักบุ้งพริกแกง หมูกรอบ", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 70, name: "เห็ดผัดกุ้ง", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🍄" },
+            { id: 71, name: "ต้มยำกุ้ง", meat: "seafood", category: "side", spicy: "spicy", emoji: "🍲" },
+            { id: 72, name: "ผัดเปรี้ยวหวานปลาทอด", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 73, name: "ผัดผักรวมหมูกรอบ", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥦" },
+            { id: 74, name: "ไข่เจียวเต้าหู้ไข่", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🍳" },
+            { id: 75, name: "ผัดมักกะโรนี", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 76, name: "แกงจืดเต้าหู้หมูสับสาหร่าย", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥬" },
+            { id: 77, name: "ข้าวผัดหนำเลี๊ยบ", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🍚" },
+            { id: 78, name: "ผัดเปรี้ยวหวานไก่กรอบ", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🍗" },
+            { id: 79, name: "ผัดเม็ดมะม่วง", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🍗" },
+            { id: 80, name: "มาม่าผัด", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 81, name: "ข้าวต้ม", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🍲" },
+            { id: 82, name: "ข้าวผัดอเมริกัน", meat: "chicken", category: "single", spicy: "non-spicy", emoji: "🍗" },
+            { id: 83, name: "ข้าวผัดปลาทู", meat: "fish", category: "single", spicy: "spicy", emoji: "🐟" },
+            { id: 84, name: "ปลากะพงผัดฉ่า", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 85, name: "เส้นหมี่ผัดผักกระเฉด", meat: "seafood", category: "noodle", spicy: "spicy", emoji: "🍜" },
+            { id: 86, name: "ข้าวผัดแหนม", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🍚" },
+            { id: 87, name: "ผัดเผ็ดหมูป่า", meat: "pork", category: "side", spicy: "spicy", emoji: "🐗" },
+            { id: 88, name: "ปลาดุกสับผัดถั่วพู", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 89, name: "ผัดเปรี้ยวหวานเต้าหู้", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🍄" },
+            { id: 90, name: "ปูผัดพริกเผา", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦀" },
+            { id: 91, name: "เนื้อผัดพริกไทยดำ", meat: "beef", category: "side", spicy: "spicy", emoji: "🥩" },
+            { id: 92, name: "หมูสับผัดไข่เค็ม", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🍳" },
+            { id: 93, name: "คะน้าน้ำมันหอย", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🥬" },
+            { id: 94, name: "แขนงปลาเค็ม", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🥬" },
+            { id: 95, name: "ผัดไทยห่อไข่", meat: "seafood", category: "noodle", spicy: "non-spicy", emoji: "🥢" },
+            { id: 96, name: "หมี่ฮกเกี้ยน", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍜" },
+            { id: 97, name: "ต้มจืดฟักเขียวใส่ไก่", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🥣" },
+            { id: 98, name: "เกี๊ยวหมูเด้ง", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🥟" },
+            { id: 99, name: "ไข่เยี่ยวม้ากะเพรากรอบ", meat: "pork", category: "side", spicy: "spicy", emoji: "🍳" },
+            { id: 100, name: "ฟักเขียวผัดไข่", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🍳" },
+            { id: 101, name: "หมูเด้งทอดกระเทียมพริกไทย", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 102, name: "กะเพราวุ้นเส้นกุ้งสับ", meat: "seafood", category: "noodle", spicy: "spicy", emoji: "🍝" },
+            { id: 103, name: "มาม่าผัดผงกะหรี่", meat: "seafood", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 104, name: "ข้าวผัดน้ำพริกเผาไข่เค็ม", meat: "pork", category: "single", spicy: "spicy", emoji: "🍚" },
+            { id: 105, name: "ห่อหมกแห้งทะเลราดข้าว", meat: "seafood", category: "single", spicy: "spicy", emoji: "🍛" },
+            { id: 106, name: "ไข่เจียวพริกแกง", meat: "pork", category: "side", spicy: "spicy", emoji: "🍳" },
+            { id: 107, name: "กะเพราคอหมูย่าง", meat: "pork", category: "single", spicy: "spicy", emoji: "🥓" },
+            { id: 108, name: "กะเพราหน่อไม้ดอง", meat: "chicken", category: "single", spicy: "spicy", emoji: "🌶️" },
+            { id: 109, name: "ยำไข่ดาว", meat: "veggie", category: "side", spicy: "spicy", emoji: "🍳" },
+            { id: 110, name: "กะเพราเห็ดฟางราดข้าว", meat: "veggie", category: "single", spicy: "spicy", emoji: "🍄" },
+            { id: 111, name: "ไข่เจียวคั่วกลิ้ง", meat: "pork", category: "side", spicy: "spicy", emoji: "🍳" },
+            { id: 112, name: "กะเพราไข่เยี่ยวม้า", meat: "pork", category: "single", spicy: "spicy", emoji: "🍛" },
+            { id: 113, name: "ไข่เจียวหอยลายทอดกรอบ", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🦪" },
+            { id: 114, name: "ผัดหน่อไม้ใส่เห็ด", meat: "veggie", category: "side", spicy: "spicy", emoji: "🍄" },
+            { id: 115, name: "ผัดผักรวม", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🥦" },
+            { id: 116, name: "ทูน่าผัดไข่พริกเผา", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 117, name: "มักกะโรนีผัดน้ำพริก", meat: "pork", category: "noodle", spicy: "spicy", emoji: "🍝" },
+            { id: 118, name: "บะหมี่แห้งขาหมู", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍜" },
+            { id: 119, name: "วุ้นเส้นผัดไข่ใส่แหนม", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍝" },
+            { id: 120, name: "ผัดผักบุ้งปลากระป๋อง", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 121, name: "ผัดขี้เมาทูน่า", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 122, name: "ต้มยำขาหมู", meat: "pork", category: "side", spicy: "spicy", emoji: "🍲" },
+            { id: 123, name: "ต้มยำมะกะโรนีน้ำข้น", meat: "seafood", category: "noodle", spicy: "spicy", emoji: "🍲" },
+            { id: 124, name: "ผัดผักรวมพริกแกงไก่", meat: "chicken", category: "side", spicy: "spicy", emoji: "🍗" },
+            { id: 125, name: "ข้าวคลุกหมูกรอบน้ำมันหอย", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🥓" },
+            { id: 126, name: "ไก่ผัดซอสมะเขือเทศ", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🍗" },
+            { id: 127, name: "ข้าวขาหมูเนื้อหนัง", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🍖" },
+            { id: 128, name: "ข้าวหมูแดง", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🥓" },
+            { id: 129, name: "ข้าวหมูกรอบ", meat: "pork", category: "single", spicy: "non-spicy", emoji: "🥓" },
+            { id: 130, name: "ข้าวมันไก่ตอนเนื้อน่อง", meat: "chicken", category: "single", spicy: "non-spicy", emoji: "🍗" },
+            { id: 131, name: "ข้าวมันไก่ทอดกรอบ", meat: "chicken", category: "single", spicy: "non-spicy", emoji: "🍗" },
+            { id: 132, name: "ข้าวซอยไก่", meat: "chicken", category: "noodle", spicy: "spicy", emoji: "🍜" },
+            { id: 133, name: "ก๋วยจั๊บญวนหมูยออุบล", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍲" },
+            { id: 134, name: "ก๋วยจั๊บน้ำข้น", meat: "pork", category: "noodle", spicy: "non-spicy", emoji: "🍲" },
+            { id: 135, name: "ก๋วยเตี๋ยวเรือน้ำตกหมูตุ๋น", meat: "pork", category: "noodle", spicy: "spicy", emoji: "🍜" },
+            { id: 136, name: "ก๋วยเตี๋ยวเรือเนื้อเปื่อย", meat: "beef", category: "noodle", spicy: "spicy", emoji: "🥩" },
+            { id: 137, name: "กุ้งอบวุ้นเส้น", meat: "seafood", category: "noodle", spicy: "non-spicy", emoji: "🦐" },
+            { id: 138, name: "หอยทอดกระทะร้อนแป้งกรอบ", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🦪" },
+            { id: 139, name: "ออส่วนหอยนางรมแป้งนิ่ม", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🦪" },
+            { id: 140, name: "ปลากะพงนึ่งมะนาว", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 141, name: "ปลากะพงทอดน้ำปลา", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 142, name: "ปลากะพงนึ่งซีอิ๊ว", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 143, name: "ปลาราดพริกสามรส", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 144, name: "ปลาช่อนลุยสวนสมุนไพร", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 145, name: "ต้มยำปลาทูสดใบกะเพรา", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 146, name: "ต้มส้มปลากระบอก", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 147, name: "ทอดมันปลากราย", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 148, name: "ต้มข่าไก่กะทิสด", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🥥" },
+            { id: 149, name: "ไก่ผัดขิงสดเห็ดหูหนู", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🍗" },
+            { id: 150, name: "แกงเขียวหวานไก่ยอดมะพร้าว", meat: "chicken", category: "side", spicy: "spicy", emoji: "🍛" },
+            { id: 151, name: "พะแนงหมู", meat: "pork", category: "side", spicy: "spicy", emoji: "🍛" },
+            { id: 152, name: "พะแนงเนื้อวัวติดมัน", meat: "beef", category: "side", spicy: "spicy", emoji: "🥩" },
+            { id: 153, name: "มัสมั่นไก่น่อง", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🍗" },
+            { id: 154, name: "มัสมั่นเนื้อตุ๋นยาจีน", meat: "beef", category: "side", spicy: "non-spicy", emoji: "🥩" },
+            { id: 155, name: "ต้มเล้งกระดูกหมู", meat: "pork", category: "side", spicy: "spicy", emoji: "🌶️" },
+            { id: 156, name: "หมูมะนาวพริกสดกระเทียมโทน", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 157, name: "ลาบหมูคั่ว", meat: "pork", category: "side", spicy: "spicy", emoji: "🥗" },
+            { id: 158, name: "น้ำตกคอหมูย่าง", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 159, name: "ส้มตำไทยไข่เค็ม", meat: "veggie", category: "side", spicy: "spicy", emoji: "🥗" },
+            { id: 160, name: "ส้มตำปูปลาร้า", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦀" },
+            { id: 161, name: "ตำข้าวโพดไข่เค็ม", meat: "veggie", category: "side", spicy: "spicy", emoji: "🌽" },
+            { id: 162, name: "กุ้งแช่น้ำปลาพริกสด", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦐" },
+            { id: 163, name: "โป๊ะแตกทะเลรวมมิตร", meat: "seafood", category: "side", spicy: "spicy", emoji: "🍲" },
+            { id: 164, name: "แกงส้มชะอมกุ้งสด", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦐" },
+            { id: 165, name: "แกงเลียงกุ้งสดผักรวม", meat: "seafood", category: "side", spicy: "spicy", emoji: "🍲" },
+            { id: 166, name: "ข้าวผัดมันกุ้งเสวย", meat: "seafood", category: "single", spicy: "non-spicy", emoji: "🍚" },
+            { id: 167, name: "ข้าวหน้าเป็ดย่างฮ่องกง", meat: "chicken", category: "single", spicy: "non-spicy", emoji: "🍗" },
+            { id: 168, name: "บะหมี่เป็ดย่างเส้นแบน", meat: "chicken", category: "noodle", spicy: "non-spicy", emoji: "🍜" },
+            { id: 169, name: "ขนมจีนน้ำยาปลาช่อน", meat: "fish", category: "noodle", spicy: "spicy", emoji: "🌶️" },
+            { id: 170, name: "ขนมจีนน้ำเงี้ยวเชียงราย", meat: "pork", category: "noodle", spicy: "spicy", emoji: "🍲" },
+            { id: 171, name: "ขนมจีนแกงเขียวหวานไก่", meat: "chicken", category: "noodle", spicy: "spicy", emoji: "🍛" },
+            { id: 172, name: "ซุปหางวัว", meat: "beef", category: "side", spicy: "spicy", emoji: "🥣" },
+            { id: 173, name: "กะเพราเนื้อตุ๋นเอ็นแก้ว", meat: "beef", category: "single", spicy: "spicy", emoji: "🥩" },
+            { id: 174, name: "ข้าวหน้าเนื้อย่างจิ้มแจ่ว", meat: "beef", category: "single", spicy: "spicy", emoji: "🥩" },
+            { id: 175, name: "ผัดฟักทองใส่ไข่", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🎃" },
+            { id: 176, name: "ยำไข่ต้มยางมะตูม", meat: "veggie", category: "side", spicy: "spicy", emoji: "🥚" },
+            { id: 177, name: "ไข่พะโล้หมูสามชั้น", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥚" },
+            { id: 178, name: "แกงเขียวหวานไก่ใส่ฟัก", meat: "chicken", category: "side", spicy: "spicy", emoji: "🍛" },
+            { id: 179, name: "พะแนงไก่", meat: "chicken", category: "side", spicy: "spicy", emoji: "🍛" },
+            { id: 180, name: "แกงส้มผักรวมกุ้งสด", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦐" },
+            { id: 181, name: "แกงไตปลาปักษ์ใต้", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 182, name: "แกงคั่วหอยแมลงภู่ใบชะพลู", meat: "seafood", category: "side", spicy: "spicy", emoji: "🦪" },
+            { id: 183, name: "ต้มจืดหัวไชเท้ากระดูกหมู", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥣" },
+            { id: 184, name: "แตงกวาผัดไข่", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🥒" },
+            { id: 185, name: "ยำกุนเชียง", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 186, name: "กุ้งผัดเปรี้ยวหวาน", meat: "seafood", category: "side", spicy: "non-spicy", emoji: "🦐" },
+            { id: 187, name: "ชุดน้ำพริกอ่องผักสด", meat: "pork", category: "side", spicy: "spicy", emoji: "🍅" },
+            { id: 188, name: "ปลาทอดขมิ้นพร้อมชุดน้ำยำ", meat: "fish", category: "side", spicy: "spicy", emoji: "🐟" },
+            { id: 189, name: "ไก่ทอดหาดใหญ่หอมเจียว", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🍗" },
+            { id: 190, name: "ขนมจีนน้ำยาปลาทูน่า", meat: "fish", category: "noodle", spicy: "spicy", emoji: "🍜" },
+            { id: 191, name: "หมูก้อนทอดกระเทียมพริกไทย", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🧆" },
+            { id: 192, name: "หมูยอกลมทอด / ลวก", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 193, name: "ปลาวงทอดกรอบ", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 194, name: "ปลาทูทอด", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 195, name: "ไข่ลูกเขย", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🥚" },
+            { id: 196, name: "กุนเชียงทอดหั่นชิ้น", meat: "pork", category: "side", spicy: "non-spicy", emoji: "🥓" },
+            { id: 197, name: "แกงไก่ใบยี่หร่า", meat: "chicken", category: "side", spicy: "spicy", emoji: "🍛" },
+            { id: 198, name: "แกงเผ็ดฟักทองหมู", meat: "pork", category: "side", spicy: "spicy", emoji: "🎃" },
+            { id: 199, name: "ต้มจืดฟักไก่สับ", meat: "chicken", category: "side", spicy: "non-spicy", emoji: "🥣" },
+            { id: 200, name: "ไชโป๊วผัดไข่", meat: "veggie", category: "side", spicy: "non-spicy", emoji: "🍳" },
+            { id: 201, name: "หมูผัดกะปิ", meat: "pork", category: "side", spicy: "spicy", emoji: "🥓" },
+            { id: 202, name: "ยำรวมมิตร", meat: "seafood", category: "side", spicy: "spicy", emoji: "🥗" },
+            { id: 203, name: "น้ำพริกหมูผัด", meat: "pork", category: "side", spicy: "spicy", emoji: "🌶️" },
+            { id: 204, name: "ปลานิลทอดแดดเดียว", meat: "fish", category: "side", spicy: "non-spicy", emoji: "🐟" },
+            { id: 205, name: "เย็นตาโฟ", meat: "seafood", category: "noodle", spicy: "non-spicy", emoji: "🍜" }
+        ];
+
+        let selectedFilters = {
+            meat: ['all'],
+            category: ['all'],
+            spicy: ['all']
+        };
+
+        let isSpinning = false;
+
+        function toggleFilter(type, value) {
+            if (value === 'all') {
+                selectedFilters[type] = ['all'];
+            } else {
+                selectedFilters[type] = selectedFilters[type].filter(item => item !== 'all');
+                
+                const index = selectedFilters[type].indexOf(value);
+                if (index > -1) {
+                    selectedFilters[type].splice(index, 1);
+                } else {
+                    selectedFilters[type].push(value);
+                }
+
+                if (selectedFilters[type].length === 0) {
+                    selectedFilters[type] = ['all'];
+                }
+            }
+
+            updateFilterButtonStyles(type);
+            updateHeaderBadges();
+            updateMatchCount();
+        }
+
+        function updateFilterButtonStyles(type) {
+            const buttons = document.querySelectorAll(`button[data-type="${type}"]`);
+            buttons.forEach(btn => {
+                const val = btn.getAttribute('data-val');
+                const isSelected = selectedFilters[type].includes(val);
+
+                if (isSelected) {
+                    btn.classList.add('active');
+                    if (type === 'meat') {
+                        btn.className = "filter-btn active flex items-center justify-center p-2.5 rounded-2xl border-2 border-brand-red bg-brand-red/10 text-brand-red font-medium transition active:scale-95 text-xs font-kanit";
+                    } else if (type === 'category') {
+                        btn.className = "filter-btn active flex items-center justify-center p-2.5 rounded-2xl border-2 border-brand-yellow bg-brand-yellow/30 text-stone-900 font-medium transition active:scale-95 text-xs font-kanit";
+                    } else if (type === 'spicy') {
+                        btn.className = "filter-btn active flex items-center justify-center p-2.5 rounded-2xl border-2 border-brand-green bg-brand-green/15 text-brand-green-dark font-medium transition active:scale-95 text-xs font-kanit";
+                    }
+                } else {
+                    btn.classList.remove('active');
+                    if (type === 'meat') {
+                        btn.className = "filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white hover:border-brand-red/60 text-stone-700 font-medium transition active:scale-95 text-xs font-kanit";
+                    } else if (type === 'category') {
+                        btn.className = "filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white hover:border-brand-yellow text-stone-700 font-medium transition active:scale-95 text-xs font-kanit";
+                    } else if (type === 'spicy') {
+                        btn.className = "filter-btn flex items-center justify-center p-2.5 rounded-2xl border-2 border-stone-200 bg-white hover:border-brand-green text-stone-700 font-medium transition active:scale-95 text-xs font-kanit";
+                    }
+                }
+            });
+        }
+
+        function updateHeaderBadges() {
+            const meatNames = {
+                all: 'ทานได้ทุกอย่าง',
+                pork: 'หมู',
+                chicken: 'ไก่',
+                beef: 'วัว',
+                fish: 'ปลา',
+                seafood: 'ทะเล',
+                veggie: 'มังสวิรัติ'
+            };
+            const catNames = {
+                all: 'ทานได้ทุกแบบ',
+                single: 'ข้าว/จานเดียว',
+                noodle: 'ก๋วยเตี๋ยว/เส้น',
+                side: 'กับข้าว'
+            };
+            const spicyNames = {
+                all: 'รสไหนก็ได้',
+                spicy: 'เผ็ดแซ่บ',
+                'non-spicy': 'ไม่เผ็ด'
+            };
+
+            let meatText = 'ทานได้ทุกอย่าง';
+            if (!selectedFilters.meat.includes('all')) {
+                meatText = selectedFilters.meat.map(m => meatNames[m]).join(', ');
+            }
+
+            let catText = 'ทานได้ทุกแบบ';
+            if (!selectedFilters.category.includes('all')) {
+                catText = selectedFilters.category.map(c => catNames[c]).join(', ');
+            }
+
+            let spicyText = 'รสไหนก็ได้';
+            if (!selectedFilters.spicy.includes('all')) {
+                spicyText = selectedFilters.spicy.map(s => spicyNames[s]).join(', ');
+            }
+
+            document.getElementById('selectedMeatBadge').textContent = meatText;
+            document.getElementById('selectedCategoryBadge').textContent = catText;
+            document.getElementById('selectedSpicyBadge').textContent = spicyText;
+        }
+
+        function resetFilters() {
+            selectedFilters.meat = ['all'];
+            selectedFilters.category = ['all'];
+            selectedFilters.spicy = ['all'];
+            
+            updateFilterButtonStyles('meat');
+            updateFilterButtonStyles('category');
+            updateFilterButtonStyles('spicy');
+            
+            updateHeaderBadges();
+            updateMatchCount();
+            showToast("รีเซ็ตตัวเลือกทั้งหมดเรียบร้อย");
+        }
+
+        function getFilteredDishes() {
+            return FOOD_DATABASE.filter(dish => {
+                const matchMeat = selectedFilters.meat.includes('all') || selectedFilters.meat.includes(dish.meat);
+                const matchCat = selectedFilters.category.includes('all') || selectedFilters.category.includes(dish.category);
+                const matchSpicy = selectedFilters.spicy.includes('all') || selectedFilters.spicy.includes(dish.spicy);
+                return matchMeat && matchCat && matchSpicy;
+            });
+        }
+
+        function updateMatchCount() {
+            const matches = getFilteredDishes();
+            const badge = document.getElementById('matchCountBadge');
+            badge.textContent = `มี ${matches.length} เมนู`;
+        }
+
+        function triggerSpinWheel() {
+            if (isSpinning) return;
+
+            const pool = getFilteredDishes();
+            if (pool.length === 0) {
+                showToast("ไม่พบเมนูตามเงื่อนไข ลองปรับตัวเลือกดูนะ");
+                return;
+            }
+
+            isSpinning = true;
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = true;
+            spinBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+            const slotEmoji = document.getElementById('slotEmoji');
+            const slotName = document.getElementById('slotName');
+            const slotTags = document.getElementById('slotTags');
+            const resultActions = document.getElementById('resultActions');
+            const slotBox = document.getElementById('slotSection');
+
+            resultActions.classList.add('hidden');
+            slotBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            let speed = 40;
+            let counter = 0;
+            const maxIterations = 20 + Math.floor(Math.random() * 8);
+
+            function rollCycle() {
+                const randomItem = pool[Math.floor(Math.random() * pool.length)];
+                slotEmoji.textContent = randomItem.emoji;
+                slotName.textContent = randomItem.name;
+                playTickSound();
+
+                counter++;
+                if (counter < maxIterations) {
+                    speed += 5;
+                    setTimeout(rollCycle, speed);
+                } else {
+                    const finalDish = pool[Math.floor(Math.random() * pool.length)];
+
+                    slotEmoji.textContent = finalDish.emoji;
+                    slotName.textContent = finalDish.name;
+                    slotName.className = "text-xl sm:text-2xl font-extrabold font-kanit text-brand-yellow pulse-glow tracking-wide";
+                    
+                    let catText = 'กับข้าว';
+                    if (finalDish.category === 'single') catText = 'จานเดียว';
+                    else if (finalDish.category === 'noodle') catText = 'เมนูเส้น';
+
+                    const spicyText = finalDish.spicy === 'spicy' ? 'เผ็ดแซ่บ' : 'ไม่เผ็ด';
+
+                    let meatText = 'ทั่วไป';
+                    if (finalDish.meat === 'pork') meatText = 'หมู';
+                    else if (finalDish.meat === 'chicken') meatText = 'ไก่';
+                    else if (finalDish.meat === 'beef') meatText = 'วัว';
+                    else if (finalDish.meat === 'fish') meatText = 'ปลา';
+                    else if (finalDish.meat === 'seafood') meatText = 'ทะเล';
+                    else if (finalDish.meat === 'veggie') meatText = 'มังสวิรัติ';
+
+                    slotTags.innerHTML = `
+                        <span class="text-xs px-2.5 py-1 rounded-full bg-brand-red text-white font-medium">${meatText}</span>
+                        <span class="text-xs px-2.5 py-1 rounded-full bg-brand-yellow text-stone-900 font-medium">${catText}</span>
+                        <span class="text-xs px-2.5 py-1 rounded-full bg-brand-green text-white font-medium">${spicyText}</span>
+                    `;
+
+                    resultActions.classList.remove('hidden');
+                    isSpinning = false;
+                    spinBtn.disabled = false;
+                    spinBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+
+                    showToast(`ได้เมนู: ${finalDish.name}`);
+                }
+            }
+
+            rollCycle();
+        }
+
+        function surpriseMe() {
+            resetFilters();
+            setTimeout(() => {
+                triggerSpinWheel();
+            }, 50);
+        }
+
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.textContent = message;
+
+            clearTimeout(toastTimeout);
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateMatchCount();
+        });
+    </script>
+</body>
+</html>
