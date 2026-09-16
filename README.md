@@ -21,4 +21,4 @@ A simple web app that answers the daily question: "What should I eat today?"
 
 ## Author
 
-wasineesaa
+wasinee s.
